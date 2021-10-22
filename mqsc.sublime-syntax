@@ -1,0 +1,163 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/syntax.html
+file_extensions:
+  - mqsc
+name: MQSC
+scope: source.mqsc
+
+contexts:
+  main:
+    - include: comment
+    - include: continuation_block
+    - include: value
+    - include: keyword
+
+  number:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric
+
+  comment:
+    - match: '^\*.*'
+      scope: comment.mqsc
+    - match: ^\s+\*.*
+      scope: invalid.illegal.mqsc
+
+  keyword:
+    - match: '^\s*(?i:((ALTER|ALT)\s*(AUTHINFO|CHANNEL|CHL|COMMINFO|LISTENER|NAMELIST|NL|PROCESS|PRO|QALIAS|QA|QLOCAL|QL|QMGR|QMODEL|QM|QREMOTE|QR|SERVICE|SUB|TOPIC)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((CLEAR)\s*(QLOCAL|QL|TOPICSTR)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((DEFINE|DEF)\s*(AUTHINFO|CHANNEL|CHL|COMMINFO|LISTENER|NAMELIST|NL|PROCESS|PRO|QALIAS|QA|QLOCAL|QL|QMODEL|QM|QREMOTE|QR|SERVICE|SUB|TOPIC)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((DELETE)\s*(AUTHINFO|AUTHREC|CHANNEL|CHL|COMMINFO|LISTENER|NAMELIST|NL|POLICY|POL|PROCESS|PRO|QALIAS|QA|QLOCAL|QL|QMODEL|QM|QREMOTE|QR|SERVICE|SUB|TOPIC)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((DISPLAY|DIS)\s*(AUTHINFO|AUTHREC|AUTHSERV|CHANNEL|CHL|CHLAUTH|CHSTATUS|CLUSQMGR|COMMINFO|CONN|ENTAUTH|LISTENER|LSSTATUS|NAMELIST|NL|POLICY|POL|PROCESS|PRO|PUBSUB|QALIAS|QA|QCLUSTER|QC|QLOCAL|QL|QMGR|QMODEL|QM|QMSTATUS|QREMOTE|QR|QSTATUS|QS|QUEUE|Q|SBSTATUS|SERVICE|SUB|SVSTATUS|TCLUSTER|TOPIC|TPSTATUS)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:(END|EXIT|QUIT))\b'
+      scope: keyword.mqsc
+    - match: '^\s*(?i:((PING)\s*(CHANNEL|QMGR)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((PURGE)\s*(CHANNEL)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((REFRESH|REF)\s*(CLUSTER|QMGR|SECURITY)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((RESET)\s*(CLUSTER|QMGR|CHANNEL)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((RESOLVE)\s*(CHANNEL)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((RESUME)\s*(QMGR)\s*(CLUSTER|CLUSNL)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+        4: entity.name.class.mqsc
+    - match: '^\s*(?i:((SET)\s*(AUTHREC|CHLAUTH|POLICY)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((START)\s*(CHANNEL|CHINIT|LISTENER|SERVICE)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((STOP)\s*(CHANNEL|CONNAUTH|LISTENER|SERVICE)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+    - match: '^\s*(?i:((SUSPEND)\s*(QMGR)\s*(CLUSTER|CLUSNL)))\b'
+      captures:
+        2: keyword.control.mqsc
+        3: entity.name.class.mqsc
+        4: entity.name.class.mqsc
+
+  value:
+    - match: '\(\s*'
+      scope: punctuation.section.braces.begin.mqsc
+      push: __value_block
+
+  __value_block:
+    - meta_scope: punctuation.section.braces.mqsc
+    - include: continuation
+    - include: string
+    - include: variable
+    - include: number
+    - include: value
+    - match: '\b(\w+)\b'
+      scope: constant.other.color.mqsc
+    - match: '\s*\)'
+      scope: punctuation.section.braces.end.mqsc
+      pop: true
+
+  variable:
+    - match: '\$\w+'
+      scope: variable.other.normal.mqsc
+    - match: '\${\w+}'
+      scope: variable.other.bracket.mqsc
+    - match: '%\w+%'
+      scope: variable.other.percent.mqsc
+    - match: '<\w+>'
+      scope: variable.other.chevron.mqsc
+
+  continuation:
+    - match: '([+-])(?:\s*\n)'
+      scope: constant.character.escape.mqsc
+
+  continuation_block:
+    - match: '([+-])(?:\s*\n)'
+      captures:
+        1: constant.character.escape.begin.mqsc
+      push: __continuation_block
+    - match: '([+-])(?:\s*\n)'
+      scope: constant.character.escape.middle.mqsc
+
+  __continuation_block:
+    - include: value
+    - include: comment
+    - meta_scope: debug.markup.underline.mqsc
+    - match: '([^+-]?)(?:\s*\n)'
+      captures:
+        1: debug.constant.character.escape.end.mqsc
+      pop: true
+
+  string:
+    - match: "'"
+      scope: punctuation.definition.string.begin.mqsc
+      push: __single_quoted_string
+    - match: "\""
+      scope: invalid.illegal.mqsc
+      push: __double_quoted_string
+
+  __single_quoted_string:
+    - include: continuation
+    - include: variable
+    - meta_scope: string.quoted.single.mqsc
+    - match: '\\.'
+      scope: constant.character.escape.mqsc
+    - match: "'"
+      scope: punctuation.definition.string.end.mqsc
+      pop: true
+
+  __double_quoted_string:
+    - meta_scope: invalid.illegal.mqsc
+    - match: \"
+      scope: invalid.illegal.mqsc
+      pop: true
